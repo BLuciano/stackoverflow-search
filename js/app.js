@@ -81,6 +81,29 @@ var getUnanswered = function(tags) {
 	});
 };
 
+//Gets the top answerers for the provided tag on stackoverflow
+var getTopAnswerers = function(tag){
+	var request = {
+		tags: tag, 
+		site : 'stackoverflow',
+		period : 'all_time'
+	};
+
+	$.ajax({
+		url: "http://api.stackexchange.com/2.2/tags/top-answerers",
+		data: request,
+		dataType: "jsonp",
+		type: "GET",
+	})
+	.done(function(result){
+		console.log(result);
+	})
+	.fail(function(jqXHR, error){
+		var errorElem = showError(error);
+		$('.search-results').append(errorElem);
+	});
+};
+
 
 $(document).ready( function() {
 	$('.unanswered-getter').submit( function(e){
@@ -90,5 +113,12 @@ $(document).ready( function() {
 		// get the value of the tags the user submitted
 		var tags = $(this).find("input[name='tags']").val();
 		getUnanswered(tags);
+	});
+
+	$('.inspiration-getter').submit(function(e){
+		e.preventDefault();
+		$('.results').html('');
+		var tag = $(this).find("input[name='answerers']").val();
+		getTopAnswerers(tag);
 	});
 });
